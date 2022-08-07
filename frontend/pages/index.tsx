@@ -1,4 +1,6 @@
-export default function Home() {
+import type { NextPage } from "next";
+
+const Home: NextPage = () => {
   return (
     <div className="max-w-lg mx-auto text-center pt-24 grid gap-5">
       <h1 className="text-2xl font-bold ">👋 Hey there!</h1>
@@ -11,4 +13,6 @@ export default function Home() {
       </button>
     </div>
   );
-}
+};
+
+export default Home;
