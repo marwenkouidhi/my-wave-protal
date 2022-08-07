@@ -6,7 +6,7 @@ export default function Home() {
         I am farza and I worked on self-driving cars so that's pretty cool
         right? Connect your Ethereum wallet and wave at me!
       </p>
-      <button className="bg-gray-200 hover:bg-gray-300 text-sm text-bold cursor-pointer w-full py-2 rounded-md">
+      <button className="bg-gray-200 hover:bg-gray-300 anima text-sm text-bold cursor-pointer w-full py-2 rounded-md">
         Wave at Me
       </button>
     </div>
