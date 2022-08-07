@@ -2,12 +2,20 @@ import { ContractFactory } from "ethers";
 import { ethers } from "hardhat";
 
 const main = async () => {
+  const [owner, randomPerson] = await ethers.getSigners();
   const waveContractFactory: ContractFactory = await ethers.getContractFactory(
     "WavePortal"
   );
   const waveContract = await waveContractFactory.deploy();
   await waveContract.deployed();
+
   console.log("Contract deployed to:", waveContract.address);
+  console.log("Contract deployed by:", owner.address);
+
+  let waveCount = await waveContract.getTotalWaves();
+  let waveTx = await waveContract.wave();
+  await waveTx.wait();
+  waveCount = await waveContract.getTotalWaves();
 };
 
 const runMain = async () => {
