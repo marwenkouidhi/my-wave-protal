@@ -1,6 +1,5 @@
 {
   "include": ["./hardhat.config.ts", "./scripts", "./deploy", "./test"],
-
   "compilerOptions": {
     "target": "es2020",
     "module": "commonjs",

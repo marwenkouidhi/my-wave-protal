@@ -1,0 +1,76 @@
+{
+  "address": "0x96F3B1B30656870Bdd0Aaa3942998bAA125adb9A",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "getTotalWaves",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "wave",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x87f590ce17286a9b47da2d13b3cc4d814c1a72d44e2f1c2967ae7d0d15789922",
+  "receipt": {
+    "to": null,
+    "from": "0x5b798fB0662c7639878a0625e0D5bF9a862E452d",
+    "contractAddress": "0x96F3B1B30656870Bdd0Aaa3942998bAA125adb9A",
+    "transactionIndex": 20,
+    "gasUsed": "133603",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0xfbdb8ddf3675002c2bdeb22c460ece2f56b8f55ccc522e30585f1aaea5e1cbd7",
+    "transactionHash": "0x87f590ce17286a9b47da2d13b3cc4d814c1a72d44e2f1c2967ae7d0d15789922",
+    "logs": [],
+    "blockNumber": 11167019,
+    "cumulativeGasUsed": "4414743",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 2,
+  "solcInputHash": "b3ddc2ff15aa905ef155e0465c14e7df",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"getTotalWaves\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"wave\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/WavePortal.sol\":\"WavePortal\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/WavePortal.sol\":{\"content\":\"// SPDX-License-Identifier: UNLICENSED\\n\\npragma solidity ^0.8.0;\\n\\ncontract WavePortal {\\n  uint256 totalWaves;\\n\\n  function wave() public {\\n    totalWaves += 1;\\n  }\\n\\n  function getTotalWaves() public view returns (uint256) {\\n    return totalWaves;\\n  }\\n}\\n\",\"keccak256\":\"0xd2229f6140ca0cae1b90bf71b6845066308174168d2d248b03606d1f8980c903\",\"license\":\"UNLICENSED\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50610176806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80636fe15b441461003b5780639a2cdc0814610045575b600080fd5b610043610063565b005b61004d61007e565b60405161005a91906100a0565b60405180910390f35b600160008082825461007591906100ea565b92505081905550565b60008054905090565b6000819050919050565b61009a81610087565b82525050565b60006020820190506100b56000830184610091565b92915050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b60006100f582610087565b915061010083610087565b9250827fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff03821115610135576101346100bb565b5b82820190509291505056fea26469706673582212203984f5ff15aef1504cbf43ab9bd165164b31ffda28e7f99e220489aa0fb8e2ce64736f6c63430008090033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100365760003560e01c80636fe15b441461003b5780639a2cdc0814610045575b600080fd5b610043610063565b005b61004d61007e565b60405161005a91906100a0565b60405180910390f35b600160008082825461007591906100ea565b92505081905550565b60008054905090565b6000819050919050565b61009a81610087565b82525050565b60006020820190506100b56000830184610091565b92915050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b60006100f582610087565b915061010083610087565b9250827fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff03821115610135576101346100bb565b5b82820190509291505056fea26469706673582212203984f5ff15aef1504cbf43ab9bd165164b31ffda28e7f99e220489aa0fb8e2ce64736f6c63430008090033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 3,
+        "contract": "contracts/WavePortal.sol:WavePortal",
+        "label": "totalWaves",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint256"
+      }
+    ],
+    "types": {
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}
