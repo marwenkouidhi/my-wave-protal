@@ -1,12 +1,22 @@
 import { ethers } from "ethers";
+import { formatEther } from "ethers/lib/utils";
 import type { NextPage } from "next";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import abi from "../utils/WavePortal.json";
 
 const Home: NextPage = () => {
-  const [currentAccount, setCurrentAccount] = useState("");
-  const contractAddress = "0x77900485A7c77c99d1E02B8E2d0bA3f751CCEecE";
+  const [currentAccount, setCurrentAccount] = useState({
+    address: "",
+    balance: "",
+    isLoggedIn: false,
+  });
+  const [portalState, setPortalState] = useState({
+    nbWaves: null,
+    isLoading: false,
+  });
+
+  const contractAddress = "0x96F3B1B30656870Bdd0Aaa3942998bAA125adb9A";
   const contractABI = abi.abi;
   const checkIfWalletIsConnected = async () => {
     try {
@@ -16,8 +26,18 @@ const Home: NextPage = () => {
       } else {
         const accounts = await ethereum.request({ method: "eth_accounts" });
         if (accounts.length > 0) {
-          console.log("An authorized account was found", accounts[0]);
-          setCurrentAccount(accounts[0]);
+          const provider = new ethers.providers.Web3Provider(ethereum);
+
+          setCurrentAccount({
+            ...currentAccount,
+            isLoggedIn: true,
+            address: accounts[0],
+            balance: formatEther(await provider.getBalance(accounts[0])),
+          });
+          setPortalState({
+            ...portalState,
+            nbWaves: await getTotalWaves(),
+          });
         } else {
           console.log("No authorized account found");
         }
@@ -38,9 +58,16 @@ const Home: NextPage = () => {
       const accounts = await ethereum.request({
         method: "eth_requestAccounts",
       });
-
-      console.log("Connected", accounts[0]);
-      setCurrentAccount(accounts[0]);
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      setCurrentAccount({
+        isLoggedIn: true,
+        balance: formatEther(await provider.getBalance(accounts[0])),
+        address: accounts[0],
+      });
+      setPortalState({
+        ...portalState,
+        nbWaves: await getTotalWaves(),
+      });
     } catch (error) {
       console.log(error);
     }
@@ -50,24 +77,23 @@ const Home: NextPage = () => {
     try {
       const { ethereum } = window;
       if (ethereum) {
-        const provider = new ethers.providers.WebSocketProvider(ethereum);
+        const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const wavePortalContract = new ethers.Contract(
           contractAddress,
           contractABI,
           signer
         );
-        console.log("waving");
-        let count = await wavePortalContract.getTotalWaves();
-        console.log("Retrieved total wave count...", count.toNumber());
+        setPortalState({
+          ...portalState,
+          isLoading: true,
+        });
         const waveTxn = await wavePortalContract.wave();
-        console.log("Mining...", waveTxn.hash);
-
         await waveTxn.wait();
-        console.log("Mined -- ", waveTxn.hash);
-
-        count = await wavePortalContract.getTotalWaves();
-        console.log("Retrieved total wave count...", count.toNumber());
+        setPortalState({
+          isLoading: false,
+          nbWaves: await getTotalWaves(),
+        });
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -75,37 +101,89 @@ const Home: NextPage = () => {
       console.log(error);
     }
   };
+
+  const getTotalWaves = async () => {
+    const provider = new ethers.providers.Web3Provider(ethereum);
+    const signer = provider.getSigner();
+    const wavePortalContract = new ethers.Contract(
+      contractAddress,
+      contractABI,
+      signer
+    );
+
+    return (await wavePortalContract.getTotalWaves()).toNumber();
+  };
+
   useEffect(() => {
     checkIfWalletIsConnected();
+    ethereum.on("accountsChanged", (accounts) => {
+      if (accounts.length > 0) {
+        connectWallet();
+      } else {
+        setCurrentAccount({
+          isLoggedIn: false,
+          balance: "",
+          address: "",
+        });
+      }
+    });
+    ethereum.on("connect", () => {
+      connectWallet();
+    });
   }, []);
 
   return (
-    <div className="grid gap-7 max-w-5xl mx-auto p-5">
-      <button
-        className=" bg-green-200 justify-self-end hover:bg-green-300  text-sm text-bold cursor-pointer  p-1 px-5 rounded-md text-gray-600 font-semibold flex items-center  space-x-2"
-        onClick={connectWallet}
-      >
-        <Image src="/purse.png" height={20} width={20} />
-        {currentAccount ? (
-          <p>{currentAccount.substring(1, 15) + "..."}</p>
-        ) : (
-          <p>Connect Wallet</p>
-        )}
-      </button>
+    <div className="grid gap-7 max-w-6xl  mx-auto p-5">
+      <div className="justify-self-end text-xs text-bold flex space-x-2 text-gray-600 font-semibold ">
+        <button
+          className="bg-green-200  hover:bg-green-300  p-1 px-5 flex items-center rounded-md cursor-pointer space-x-2 "
+          onClick={connectWallet}
+        >
+          <span className="text-lg">🙋‍♂️</span>
+
+          {currentAccount.isLoggedIn ? (
+            <p>{currentAccount.address.substring(1, 15) + "..."}</p>
+          ) : (
+            <p>Connect Wallet</p>
+          )}
+        </button>
+        {currentAccount.isLoggedIn ? (
+          <button
+            className="bg-red-200 hover:bg-red-300  p-1 px-5 flex items-center rounded-md cursor-pointer space-x-2"
+            onClick={connectWallet}
+          >
+            <span className="text-lg">💵</span>
+            <p>{"Balance: " + currentAccount.balance.substring(1, 5)}</p>
+          </button>
+        ) : null}
+      </div>
 
       <div className="max-w-lg mx-auto text-center grid gap-5">
-        <h1 className="text-2xl font-bold  flex items-end justify-center space-x-2 ">
+        <h1 className="text-2xl font-bold  flex items-end justify-center space-x-2 relative">
           <span className="text-5xl">👋</span>
           <p>Hey there!</p>
+          {currentAccount.isLoggedIn && (
+            <p className="text-xs font-semibold absolute top-0 left-0  bg-green-200 text-gray-600  px-3 leading-3 p-1  rounded-md  ">
+              <span>Total waves: </span>
+              <span>{portalState.nbWaves}</span>
+            </p>
+          )}
         </h1>
         <p className="text-gray-500">
-          Hey! I am Marwen. Connect your Ethereum wallet and wave at me!
+          I am Marwen and this is my to my Wave Portal. Make you're self home,
+          connect your Ethereum wallet and wave at me!
         </p>
         <button
+          disabled={!currentAccount.isLoggedIn}
           onClick={wave}
-          className="bg-gray-200 text-gray-600 font-semibold hover:bg-gray-300 anima text-sm text-bold cursor-pointer w-full py-2 rounded-md"
+          className="relative disabled bg-gray-200 disabled:cursor-not-allowed disabled:opacity-80 disabled:bg-red-200 text-gray-600 font-semibold hover:bg-gray-300 anima text-sm text-bold cursor-pointer w-full py-2 rounded-md overflow-hidden  first-letter:"
         >
           ➡️ Wave at Me
+          {portalState.isLoading && (
+            <div className="absolute bottom-0 w-full bg-gray-200  ">
+              <div className="bg-green-300 h-1 animate-wiggle"></div>
+            </div>
+          )}
         </button>
       </div>
     </div>
