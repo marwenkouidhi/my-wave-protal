@@ -3,6 +3,8 @@ import { formatEther } from "ethers/lib/utils";
 import type { NextPage } from "next";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import RealisticConfetti from "../components/Confetti";
+import Realistic from "../components/Confetti";
 import abi from "../utils/WavePortal.json";
 
 const Home: NextPage = () => {
@@ -15,6 +17,10 @@ const Home: NextPage = () => {
     nbWaves: null,
     isLoading: false,
   });
+  const [confettiState, setconfettiState] = useState(0);
+  const increment = () => {
+    setconfettiState(confettiState + 1);
+  };
 
   const contractAddress = "0x96F3B1B30656870Bdd0Aaa3942998bAA125adb9A";
   const contractABI = abi.abi;
@@ -94,6 +100,7 @@ const Home: NextPage = () => {
           isLoading: false,
           nbWaves: await getTotalWaves(),
         });
+        increment();
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -170,8 +177,8 @@ const Home: NextPage = () => {
           )}
         </h1>
         <p className="text-gray-500">
-          I am Marwen and this is my to my Wave Portal. Make you're self home,
-          connect your Ethereum wallet and wave at me!
+          I&apos;am Marwen and this is my to my Wave Portal. Make you&apos;re
+          self home, connect your Ethereum wallet and wave at me!
         </p>
         <button
           disabled={!currentAccount.isLoggedIn}
@@ -186,6 +193,7 @@ const Home: NextPage = () => {
           )}
         </button>
       </div>
+      <RealisticConfetti state={confettiState} />
     </div>
   );
 };
