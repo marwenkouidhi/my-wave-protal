@@ -1,13 +1,27 @@
 import { ethers } from "ethers";
 import { formatEther } from "ethers/lib/utils";
 import type { NextPage } from "next";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import RealisticConfetti from "../components/Confetti";
-import Realistic from "../components/Confetti";
+import { useCallback, useEffect, useRef, useState } from "react";
+import ReactCanvasConfetti from "react-canvas-confetti";
 import abi from "../utils/WavePortal.json";
+const canvasStyles = {
+  position: "fixed",
+  pointerEvents: "none",
+  width: "100%",
+  height: "100%",
+  top: 0,
+  left: 0,
+};
+declare var window: any;
+declare var ethereum: any;
 
 const Home: NextPage = () => {
+  const refAnimationInstance = useRef(null);
+
+  const getInstance = useCallback((instance: any) => {
+    refAnimationInstance.current = instance;
+  }, []);
+
   const [currentAccount, setCurrentAccount] = useState({
     address: "",
     balance: "",
@@ -25,105 +39,114 @@ const Home: NextPage = () => {
   const contractAddress = "0x96F3B1B30656870Bdd0Aaa3942998bAA125adb9A";
   const contractABI = abi.abi;
   const checkIfWalletIsConnected = async () => {
-    try {
-      const { ethereum } = window;
-      if (!ethereum) {
-        console.log("Make sure you have metamask!");
-      } else {
-        const accounts = await ethereum.request({ method: "eth_accounts" });
-        if (accounts.length > 0) {
-          const provider = new ethers.providers.Web3Provider(ethereum);
-
-          setCurrentAccount({
-            ...currentAccount,
-            isLoggedIn: true,
-            address: accounts[0],
-            balance: formatEther(await provider.getBalance(accounts[0])),
-          });
-          setPortalState({
-            ...portalState,
-            nbWaves: await getTotalWaves(),
-          });
+    if (typeof window !== "undefined") {
+      try {
+        const { ethereum } = window;
+        if (!ethereum) {
+          console.log("Make sure you have metamask!");
         } else {
-          console.log("No authorized account found");
+          const accounts = await ethereum.request({ method: "eth_accounts" });
+          if (accounts.length > 0) {
+            const provider = new ethers.providers.Web3Provider(ethereum);
+
+            setCurrentAccount({
+              ...currentAccount,
+              isLoggedIn: true,
+              address: accounts[0],
+              balance: formatEther(await provider.getBalance(accounts[0])),
+            });
+            setPortalState({
+              ...portalState,
+              nbWaves: await getTotalWaves(),
+            });
+          } else {
+            console.log("No authorized account found");
+          }
         }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
     }
   };
   const connectWallet = async () => {
-    try {
-      const { ethereum } = window;
+    if (typeof window !== "undefined") {
+      try {
+        const { ethereum } = window;
 
-      if (!ethereum) {
-        alert("Get MetaMask!");
-        return;
+        if (!ethereum) {
+          alert("Get MetaMask!");
+          return;
+        }
+
+        const accounts = await ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        setCurrentAccount({
+          isLoggedIn: true,
+          balance: formatEther(await provider.getBalance(accounts[0])),
+          address: accounts[0],
+        });
+        setPortalState({
+          ...portalState,
+          nbWaves: await getTotalWaves(),
+        });
+      } catch (error) {
+        console.log(error);
       }
-
-      const accounts = await ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      setCurrentAccount({
-        isLoggedIn: true,
-        balance: formatEther(await provider.getBalance(accounts[0])),
-        address: accounts[0],
-      });
-      setPortalState({
-        ...portalState,
-        nbWaves: await getTotalWaves(),
-      });
-    } catch (error) {
-      console.log(error);
     }
   };
 
   const wave = async () => {
-    try {
-      const { ethereum } = window;
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const wavePortalContract = new ethers.Contract(
-          contractAddress,
-          contractABI,
-          signer
-        );
-        setPortalState({
-          ...portalState,
-          isLoading: true,
-        });
-        const waveTxn = await wavePortalContract.wave();
-        await waveTxn.wait();
-        setPortalState({
-          isLoading: false,
-          nbWaves: await getTotalWaves(),
-        });
-        increment();
-      } else {
-        console.log("Ethereum object doesn't exist!");
+    if (typeof window !== "undefined") {
+      try {
+        const { ethereum } = window;
+        if (ethereum) {
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const wavePortalContract = new ethers.Contract(
+            contractAddress,
+            contractABI,
+            signer
+          );
+          setPortalState({
+            ...portalState,
+            isLoading: true,
+          });
+          const waveTxn = await wavePortalContract.wave();
+          await waveTxn.wait();
+          setPortalState({
+            isLoading: false,
+            nbWaves: await getTotalWaves(),
+          });
+          increment();
+        } else {
+          console.log("Ethereum object doesn't exist!");
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
     }
   };
 
   const getTotalWaves = async () => {
-    const provider = new ethers.providers.Web3Provider(ethereum);
-    const signer = provider.getSigner();
-    const wavePortalContract = new ethers.Contract(
-      contractAddress,
-      contractABI,
-      signer
-    );
+    if (typeof window !== "undefined") {
+      const { ethereum } = window;
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const wavePortalContract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        signer
+      );
 
-    return (await wavePortalContract.getTotalWaves()).toNumber();
+      return (await wavePortalContract.getTotalWaves()).toNumber();
+    }
   };
 
   useEffect(() => {
     checkIfWalletIsConnected();
-    ethereum.on("accountsChanged", (accounts) => {
+    ethereum.on("accountsChanged", (accounts: any) => {
       if (accounts.length > 0) {
         connectWallet();
       } else {
@@ -164,7 +187,6 @@ const Home: NextPage = () => {
           </button>
         ) : null}
       </div>
-
       <div className="max-w-lg mx-auto text-center grid gap-5">
         <h1 className="text-2xl font-bold  flex items-end justify-center space-x-2 relative">
           <span className="text-5xl">👋</span>
@@ -193,7 +215,7 @@ const Home: NextPage = () => {
           )}
         </button>
       </div>
-      <RealisticConfetti state={confettiState} />
+      <ReactCanvasConfetti fire={confettiState} refConfetti={getInstance} />
     </div>
   );
 };
