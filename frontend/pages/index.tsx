@@ -4,20 +4,12 @@ import type { NextPage } from "next";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ReactCanvasConfetti from "react-canvas-confetti";
 import abi from "../utils/WavePortal.json";
-const canvasStyles = {
-  position: "fixed",
-  pointerEvents: "none",
-  width: "100%",
-  height: "100%",
-  top: 0,
-  left: 0,
-};
+
 declare var window: any;
 declare var ethereum: any;
 
 const Home: NextPage = () => {
   const refAnimationInstance = useRef(null);
-
   const getInstance = useCallback((instance: any) => {
     refAnimationInstance.current = instance;
   }, []);
@@ -31,6 +23,7 @@ const Home: NextPage = () => {
     nbWaves: null,
     isLoading: false,
   });
+
   const [confettiState, setconfettiState] = useState(0);
   const increment = () => {
     setconfettiState(confettiState + 1);
@@ -215,7 +208,18 @@ const Home: NextPage = () => {
           )}
         </button>
       </div>
-      <ReactCanvasConfetti fire={confettiState} refConfetti={getInstance} />
+      <ReactCanvasConfetti
+        fire={confettiState}
+        style={{
+          position: "fixed",
+          pointerEvents: "none",
+          width: "100%",
+          height: "100%",
+          top: 0,
+          left: 0,
+        }}
+        refConfetti={getInstance}
+      />
     </div>
   );
 };
